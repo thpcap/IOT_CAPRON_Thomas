@@ -27,5 +27,7 @@ Fichiers: \
 Code arduino: <code>lcd_i2c_dht22/lcd_i2c_dht22.ino/lcd_i2c_dht22.ino.ino</code>\
 Simulation:<code>lcd_i2c_dht22/lcd_i2c_dht22.sim1</code>
 
-
-
+*3.2: TempHumiX*
+Fichiers: \
+Code arduino: <code>TempHumiX/temphumix/temphumix.ino</code>\
+Simulation:<code>[TempHumiX/temphumix.sim1</code>
