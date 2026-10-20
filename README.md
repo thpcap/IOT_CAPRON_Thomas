@@ -17,4 +17,8 @@ Fichiers: \
 Code arduino: <code>capteur_dht22/capteur_dht22.ino</code>\
 Simulation:<code>capteur_dht22/capteur_dht22.sim1</code>
 
+*3.1.4 : LCD_I2C*
+Fichiers: \
+Code arduino: <code>lcd_i2c/lcd_i2c.ino</code>\
+Simulation:<code>lcd_i2c/lcd_i2c.sim1</code>
 
