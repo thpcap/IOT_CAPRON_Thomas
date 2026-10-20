@@ -12,6 +12,9 @@ Fichiers: \
 Code arduino: <code>bargraphe/bargraph/bargraph.ino</code>\
 Simulation:<code>bargraphe/bargraph.sim1</code>
 
-
+*3.1.3 : Capteur DHT22*
+Fichiers: \
+Code arduino: <code>capteur_dht22/capteur_dht22.ino</code>\
+Simulation:<code>capteur_dht22/capteur_dht22.sim1</code>
 
 
