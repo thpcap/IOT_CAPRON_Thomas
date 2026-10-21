@@ -37,6 +37,7 @@ Dossier: <code>TEMPHUMIX</code>\
 *6.1.1 : modification du programme d'aquisition de température*\
 Fichiers: \
 Code arduino: <code>TEMPHUMIX/temphumix/temphumix.ino</code>\
-*6.1.2 : Ajout du RTC*
-*6.1.3 : Connexion WIFI*
-*6.1.3.e: Mise à jour du RTC à partir du NTP*
+*6.1.2 : Ajout du RTC*\
+*6.1.3 : Connexion WIFI*\
+*6.1.3.e: Mise à jour du RTC à partir du NTP*\
+*6.1.6: connexion à MQTT*
