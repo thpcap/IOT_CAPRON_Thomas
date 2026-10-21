@@ -4,6 +4,7 @@
 #include <RTClib.h>
 #include "WiFiS3.h"
 #include <NTPClient.h>
+#include <WiFiUdp.h>
 
 //Pins
 #define LED_LIFE 2 
@@ -15,8 +16,7 @@
 
 #define Version (String)1.0
 
-#define IpNTP 192.168.1.254
-
+const char* IpNTP = "192.168.1.254";
 
 float old_t = 0;
 float old_h = 0;
@@ -28,7 +28,8 @@ unsigned long sec_time=0;
 
 RTC_Millis rtc;
 DHT dht(DHT22_DATA, DHT22);
-NTPClient ntp(udp, "pool.ntp.org", 0, 60000);
+WiFiUDP ntpUDP;
+NTPClient timeClient(ntpUDP, IpNTP, 0, 60000);
 rgb_lcd lcd;
 
 int status = WL_IDLE_STATUS;
@@ -49,16 +50,9 @@ void InitializeWifi(){
     delay(10000);
     i++;
   }
-  DateTime now = rtc.now();
 
-  lcd.setCursor(0,0);
-  lcd.print("V"+Version+" "+String(now.day()) + "/" +
-              String(now.month()) + "/" +
-              String(now.year() % 100));
-  lcd.setCursor(0,1);
-  IPAddress ip = WiFi.localIP();
-  lcd.print(ip);
-  delay(10000);
+  
+  updateNTP();
 
   //reset the screen
   /*lcd.setCursor(0,0);
@@ -69,6 +63,42 @@ void InitializeWifi(){
   //impression du charactère "°"
   lcd.print((char)223);*/
 }
+
+void updateNTP(){
+  //updates the date of the RTC
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print("RTC syncing");
+  timeClient.begin();
+  if (timeClient.forceUpdate()) {
+    // NTP fournit ici l'heure UTC
+    unsigned long epoch = timeClient.getEpochTime();
+
+    // Conversion UTC vers date/heure
+    rtc.adjust(DateTime(epoch));
+
+    lcd.setCursor(0,01);
+    lcd.print("RTC sync");
+  } else {
+    lcd.setCursor(0,1);
+    lcd.print("RTC sync fail");
+  }
+  delay(1000);
+  resetScreen();
+}
+//reset the screen to the normal screen
+void resetScreen(){
+  lcd.setCursor(0,0);
+  DateTime now = rtc.now();
+  lcd.print("V"+Version+" "+
+              String(now.day()) + "/" +
+              String(now.month()) + "/" +
+              String(now.year() % 100));
+  lcd.setCursor(0,1);
+  IPAddress ip = WiFi.localIP();
+  lcd.print(ip);
+}
+
 
 void setup() {
   // put your setup code here, to run once:
