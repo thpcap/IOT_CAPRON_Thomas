@@ -31,3 +31,9 @@ Simulation:<code>lcd_i2c_dht22/lcd_i2c_dht22.sim1</code>
 Fichiers: \
 Code arduino: <code>TempHumiX/temphumix/temphumix.ino</code>\
 Simulation:<code>[TempHumiX/temphumix.sim1</code>
+
+**6 : TempHumiX**\
+Dossier: <code>TEMPHUMIX</code>\
+*6.1.1:modification du programme d'aquisition de température*\
+Fichiers: \
+Code arduino: <code>TEMPHUMIX/temphumix/temphumix.ino</code>\
