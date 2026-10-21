@@ -1,21 +1,23 @@
 //inclusions
 #include "DHT.h"
-#include <Wire.h>
 #include "rgb_lcd.h"
 #include <RTClib.h>
+#include "WiFiS3.h"
+#include <NTPClient.h>
 
 //Pins
 #define LED_LIFE 2 
 #define DHT22_DATA A0
 
+//arduino_secrets.h header file
+#define SECRET_SSID "IoT IMT Nord Europe"
+#define SECRET_PASS "72Hin@R*"
+
+#define Version (String)1.0
+
+#define IpNTP 192.168.1.254
 
 
-/*int year=26;
-int month=10;
-int day=20;
-int hour=16;
-int minute=0;
-int sec=0;*/
 float old_t = 0;
 float old_h = 0;
 
@@ -26,9 +28,47 @@ unsigned long sec_time=0;
 
 RTC_Millis rtc;
 DHT dht(DHT22_DATA, DHT22);
-
-// set the LCD for a 16 chars and 2 line display
+NTPClient ntp(udp, "pool.ntp.org", 0, 60000);
 rgb_lcd lcd;
+
+int status = WL_IDLE_STATUS;
+
+
+void InitializeWifi(){
+  lcd.clear();
+  int i=1;
+  while (status != WL_CONNECTED) {
+    lcd.setCursor(0,0);
+    lcd.print("Connecting...");
+    lcd.setCursor(0,1);
+    lcd.print(String(i)+" try");
+    // Connect to WPA/WPA2 network:
+    status = WiFi.begin(SECRET_SSID, SECRET_PASS);
+    digitalWrite(LED_LIFE, !digitalRead(LED_LIFE));
+    // wait 10 seconds for connection:
+    delay(10000);
+    i++;
+  }
+  DateTime now = rtc.now();
+
+  lcd.setCursor(0,0);
+  lcd.print("V"+Version+" "+String(now.day()) + "/" +
+              String(now.month()) + "/" +
+              String(now.year() % 100));
+  lcd.setCursor(0,1);
+  IPAddress ip = WiFi.localIP();
+  lcd.print(ip);
+  delay(10000);
+
+  //reset the screen
+  /*lcd.setCursor(0,0);
+  lcd.print("20/10/26 16:00:00");
+  lcd.setCursor(0,1);
+  lcd.print("T tt.t C/H hh.h%");
+  lcd.setCursor(6,1);
+  //impression du charactère "°"
+  lcd.print((char)223);*/
+}
 
 void setup() {
   // put your setup code here, to run once:
@@ -43,13 +83,14 @@ void setup() {
 
   // initialize the lcd 
   lcd.begin(16, 2);
-  lcd.setCursor(0,0);
-  lcd.print("20/10/26 16:00:00");
-  lcd.setCursor(0,1);
-  lcd.print("T tt.t C/H hh.h%");
-  lcd.setCursor(6,1);
-  //impression du charactère "°"
-  lcd.print((char)223);
+
+  InitializeWifi();
+
+
+
+
+
+  
   life_time=millis();
   life_time2=millis();
   read_time=millis();
@@ -70,7 +111,7 @@ void loop() {
 
     float h = dht.readHumidity();
     float t = dht.readTemperature();
-    if(t!=old_t ){
+    /*if(t!=old_t ){
       old_t=t;
       lcd.setCursor(2,1);
       lcd.print(t,1);//ici le 1 veux dire 1 chiffre àaprès la virgule
@@ -79,9 +120,9 @@ void loop() {
       old_h=h;
       lcd.setCursor(11,1);
       lcd.print(h,1);
-    }
+    }*/
 
-    //Serial.println(String(day)+"/"+String(month)+"/"+String(year)+" "+String(hour)+":"+String(minute)+":"+String(sec));
+    //réinitialisation de l'écran pour afficher la temperature et l'humidité
     Serial.print("Temperature : ");
     Serial.print(t, 1);
     Serial.print(" oC | Humidite : ");
@@ -93,15 +134,20 @@ void loop() {
     sec_time=sec_time+1000;
     DateTime now = rtc.now();
     lcd.setCursor(0,0);
+    lcd.print("V"+Version+" "+String(now.day()) + "/" +
+                String(now.month()) + "/" +
+                String(now.year() % 100));
+    /*
+    lcd.setCursor(0,0);
     lcd.print(String(now.day()) + "/" +
               String(now.month()) + "/" +
               String(now.year() % 100) + " " +
               String(now.hour()) + ":" +
               String(now.minute()) + ":" +
               String(now.second()%100)
-            );
+            );*/
   }
-  
+  delay(50);
   
 
 
