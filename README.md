@@ -37,3 +37,4 @@ Dossier: <code>TEMPHUMIX</code>\
 *6.1.1:modification du programme d'aquisition de température*\
 Fichiers: \
 Code arduino: <code>TEMPHUMIX/temphumix/temphumix.ino</code>\
+*6.1.2: Ajout du RTC*

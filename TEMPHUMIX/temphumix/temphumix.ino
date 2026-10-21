@@ -24,7 +24,7 @@ unsigned long life_time2=0;
 unsigned long read_time=0;
 unsigned long sec_time=0;
 
-RTC_DS3231 rtc;
+RTC_Millis rtc;
 DHT dht(DHT22_DATA, DHT22);
 
 // set the LCD for a 16 chars and 2 line display
@@ -33,12 +33,14 @@ rgb_lcd lcd;
 void setup() {
   // put your setup code here, to run once:
 
+
   Serial.begin(9600);
   //initialisation des pins
   pinMode(LED_LIFE, OUTPUT);
-
+  //initialisations
   dht.begin();
-  
+  rtc.begin(DateTime(F(__DATE__), F(__TIME__)));
+
   // initialize the lcd 
   lcd.begin(16, 2);
   lcd.setCursor(0,0);
@@ -52,6 +54,7 @@ void setup() {
   life_time2=millis();
   read_time=millis();
   sec_time=millis();
+  
 
 }
 
@@ -87,6 +90,7 @@ void loop() {
   }
 
   if(time>sec_time){
+    sec_time=sec_time+1000;
     DateTime now = rtc.now();
     lcd.setCursor(0,0);
     lcd.print(String(now.day()) + "/" +
@@ -94,51 +98,11 @@ void loop() {
               String(now.year() % 100) + " " +
               String(now.hour()) + ":" +
               String(now.minute()) + ":" +
-              String(now.second())
+              String(now.second()%100)
             );
-    
-  /*  sec_time=sec_time+1000;
-    if(sec<60){
-      sec++;
-    }else{
-      sec=0;
-      if(minute<60){
-        minute++;
-      }else{
-        minute=0;
-        if(hour<24){
-          hour++;
-        }else{
-          hour=0;
-          if(day<30){
-            day++;
-          }else{
-            day=0;
-            if(month<12){
-              month++;
-            }else{
-              month=0;
-              year++;
-              lcd.setCursor(6,0);
-              lcd.print(year);
-            }
-            lcd.setCursor(3,0);
-            lcd.print(month);
-          }
-          lcd.setCursor(0,0);
-          lcd.print(day);
-        }
-        lcd.setCursor(9,0);
-          lcd.print(hour);
-      }
-      lcd.setCursor(12,0);
-      lcd.print(minute);
-    }
-    lcd.setCursor(15,0);
-    lcd.print(sec);*/
   }
   
+  
 
-  delay(500);
 
 }
