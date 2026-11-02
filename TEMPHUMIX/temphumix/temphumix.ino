@@ -28,17 +28,20 @@ const int port = 1883;
 
 const char mqttUser[] = "mos_user";
 const char mqttPassword[] = "mos_user";
+const int UTC_H = 1;
 
 RTC_Millis rtc;
 DHT dht(DHT22_DATA, DHT22);
 WiFiUDP ntpUDP;
-NTPClient timeClient(ntpUDP, IpNTP, 7200, 60000);
+NTPClient timeClient(ntpUDP, IpNTP, 3600*UTC_H, 60000);
 rgb_lcd lcd;
 WiFiClient wifiClient;
 MqttClient mqttClient(wifiClient);
 
 
 int status = WL_IDLE_STATUS;
+IPAddress ip ;
+
 
 float old_t = 0;
 float old_h = 0;
@@ -61,7 +64,7 @@ void InitializeWifi(){
     lcd.setCursor(0,0);
     lcd.print("Connecting...");
     lcd.setCursor(0,1);
-    lcd.print(String(i)+" try");
+    lcd.print("try "+String(i));
     // Connect to WPA/WPA2 network:
     status = WiFi.begin(SECRET_SSID, SECRET_PASS);
     digitalWrite(LED_LIFE, !digitalRead(LED_LIFE));
@@ -72,17 +75,17 @@ void InitializeWifi(){
   
   Serial.println("Wifi connected");
 
-  IPAddress ip = WiFi.localIP();
+  ip = WiFi.localIP();
 
   Serial.print("IP: ");
   Serial.println(ip);
   
   int bg1[10]={0,0,0,0,0,0,0,0,1,1};
   bargraph(bg1);
-  connectMQTT();
+  updateNTP();
   int bg2[10]={0,0,0,0,0,0,0,1,1,1};
   bargraph(bg2);
-  updateNTP();
+  connectMQTT();
   int bg3[10]={0,0,0,0,0,0,1,1,1,1};
   bargraph(bg3);
   resetScreen();
@@ -91,14 +94,7 @@ void InitializeWifi(){
   mqttClient.onMessage(ReadMQTT);
   int bg5[10]={0,0,0,0,0,0,0,0,0,0};
   bargraph(bg5);
-  //reset the screen
-  /*lcd.setCursor(0,0);
-  lcd.print("20/10/26 16:00:00");
-  lcd.setCursor(0,1);
-  lcd.print("T tt.t C/H hh.h%");
-  lcd.setCursor(6,1);
-  //impression du charactère "°"
-  lcd.print((char)223);*/
+  
 }
 
 void updateNTP(){
@@ -106,17 +102,19 @@ void updateNTP(){
   lcd.clear();
   lcd.setCursor(0,0);
   lcd.print("RTC syncing");
+  lcd.setCursor(0,1);
+  lcd.print(ip);
   timeClient.begin();
   if (timeClient.forceUpdate()) {
     // NTP fournit ici l'heure UTC
     unsigned long epoch = timeClient.getEpochTime();
     // Conversion UTC vers date/heure
     rtc.adjust(DateTime(epoch));
-    lcd.setCursor(0,01);
+    lcd.setCursor(0,0);
     lcd.print("RTC sync");
     Serial.println("RTC sync");
   } else {
-    lcd.setCursor(0,1);
+    lcd.setCursor(0,0);
     lcd.print("RTC sync fail");
     Serial.println("RTC sync fail");
   }
@@ -127,8 +125,10 @@ void updateNTP(){
 void connectMQTT(){
   // Connexion MQTT
   lcd.clear();
-  lcd.setCursor(0,01);
+  lcd.setCursor(0,0);
   lcd.print("Connexion MQTT...");
+  lcd.setCursor(0,1);
+  lcd.print(ip);
   Serial.print("Connexion MQTT...");
   mqttClient.setId("ido_client_"+ID_Sensor);
   mqttClient.setUsernamePassword(mqttUser, mqttPassword);
@@ -147,6 +147,7 @@ void connectMQTT(){
 
 //reset the screen to the normal screen
 void resetScreen(){
+  lcd.clear();
   lcd.setCursor(0,0);
   DateTime now = rtc.now();
   lcd.print("V"+Version+" "+
@@ -154,7 +155,6 @@ void resetScreen(){
               String(now.month()) + "/" +
               String(now.year() % 100));
   lcd.setCursor(0,1);
-  IPAddress ip = WiFi.localIP();
   lcd.print(ip);
 }
 
@@ -198,9 +198,13 @@ void ReadMQTT(int messageSize){
           break;
         case 20:
           measure=true;
+          lcd.setCursor(15,0);
+          lcd.print(" ");
           break;
         case 30:
           measure=false;
+          lcd.setCursor(15,0);
+          lcd.print("*");
           break;
         case 40:
           blink_time=2000;
