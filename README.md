@@ -41,4 +41,8 @@ Code arduino: <code>TEMPHUMIX/temphumix/temphumix.ino</code>\
 *6.1.3 : Connexion WIFI*\
 *6.1.3.e: Mise à jour du RTC à partir du NTP*\
 *6.1.6: connexion à MQTT*\
-*6.2: observation de MQTT*
+*6.2: observation de MQTT*\
+
+**7 : IHM**\
+*7.3.3 Implémentation du ClientMQTT en lecture*
+    Dossier: <code>/IHM/Back/app/console_mqtt_lecture</code>\
