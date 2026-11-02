@@ -44,8 +44,11 @@ Code arduino: <code>TEMPHUMIX/temphumix/temphumix.ino</code>\
 *6.2: observation de MQTT*\
 
 **7 : IHM**\
-*7.3.3 Implémentation du ClientMQTT en lecture*
+*7.3.3 Implémentation du ClientMQTT en lecture*\
     Dossier: <code>/IHM/Back/app/console_mqtt_lecture</code>\
-*7.3.4 ecriture MQTT et envoi de commandes*
+*7.3.4 ecriture MQTT et envoi de commandes*\
     Dossier: <code>/IHM/Back/app/console_mqtt_ecriture</code>\
-*7.3.6 MQTT multithreadé*
+*7.3.6 MQTT multithreadé*\
+*7.4.0 Developpement de l'IHM*\
+Parti pris utilisation d'une stack Web au lieu de la stack proposée ()
+*8 IHM Web*

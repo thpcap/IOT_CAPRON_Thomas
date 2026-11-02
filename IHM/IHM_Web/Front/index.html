@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="">
+  <head>
+    <meta charset="utf-8">
+    <title>IOT_Capteurs</title>
+    <link rel="stylesheet" href="css/style.css">
+  </head>
+  <body>
+    <header><h1>TempHumiX</h1></header>
+    <main>
+      <div id="options">
+        <div id="detectSensors"><input type="checkbox" name="detectSensors" id="detectSensorsCb">Detecter automatiquement les Capteurs</div>
+      </div>
+      <form action="">
+        <h2>Capteurs</h2>
+        <table>
+          <thead>
+            <tr>
+              <th></th>
+              <th>Id</th>
+              <th>Numéro de serie</th>
+              <th>Temperature</th>
+              <th>Humidité</th>
+              <th>Version</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="capt_42900">
+              <td><input type="checkbox" name="Capteurs" id="" value="42900"></td>
+              <td class="capt_id">1</td>
+              <td class="capt_sn">42900</td>
+              <td class="capt_t">25.0°C</td>
+              <td class="capt_h">25%</td>
+              <td class="capt_v">V1.1</td>
+              <td>
+                <a onclick="">Voir le graphique</a>
+              </td>
+            </tr>
+            
+          </tbody>
+        </table>
+        <div id="graphique" style="display: none;">
+
+        </div>
+        <div>
+          <h2>Envoyer une commande</h2>
+          <div>
+            <select name="commande" id="commande" onchange="activerNombre()">
+                <option value="" selected></option>
+                <option value="1">Mise à l'heure du capteur</option>
+                <option value="2">Démarrage des mesures</option>
+                <option value="3">Arrêt des mesures</option>
+                <option value="4">Clignotement lent</option>
+                <option value="5">Clignotement rapide</option>
+                <option value="6" data-min="2">Clignotement personnalisé</option>
+                <option value="7" data-min="0" data-max="1023">Écriture du bargraphe</option>
+            </select>
+            <input type="number" name="value" id="value" disabled></input>
+            <button type="submit">Envoyer</button>
+          </div>
+        </div>
+      </form>
+    </main>
+    <footer>
+      Thomas CAPRON
+      <script src="js/inputs.js"></script>
+    </footer>
+  </body>
+</html>

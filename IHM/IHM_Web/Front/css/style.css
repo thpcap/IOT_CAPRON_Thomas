@@ -1,0 +1,210 @@
+/* ==============================
+   TEMPHUMIX - STYLE PRINCIPAL
+   ============================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #f1f5f9;
+    color: #1e293b;
+    min-height: 100vh;
+}
+
+/* HEADER */
+
+header {
+    background: linear-gradient(135deg, #0f172a, #1e40af);
+    color: white;
+    padding: 25px 40px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+}
+
+header h1 {
+    font-size: 28px;
+    letter-spacing: 1px;
+}
+
+/* MAIN */
+
+main {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 25px;
+}
+
+h2 {
+    color: #1e3a8a;
+    font-size: 22px;
+    margin-bottom: 20px;
+}
+
+/* TABLEAU DES CAPTEURS */
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.07);
+}
+
+thead {
+    background-color: #1e3a8a;
+    color: white;
+}
+
+th, td {
+    padding: 16px 18px;
+    text-align: center;
+}
+
+th {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+tbody tr {
+    border-bottom: 1px solid #e2e8f0;
+    transition: background-color 0.2s;
+}
+
+tbody tr:hover {
+    background-color: #eff6ff;
+}
+
+tbody tr:last-child {
+    border-bottom: none;
+}
+
+td {
+    font-size: 14px;
+}
+
+/* CHECKBOX */
+
+input[type="checkbox"] {
+    width: 17px;
+    height: 17px;
+    cursor: pointer;
+    accent-color: #2563eb;
+}
+
+/* LIENS */
+
+a {
+    color: #2563eb;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+a:hover {
+    text-decoration: underline;
+    color: #1d4ed8;
+}
+
+/* FORMULAIRE DE COMMANDE */
+
+form > div {
+    margin-top: 35px;
+    background-color: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.07);
+}
+
+select,
+input[type="number"] {
+    padding: 12px 15px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-size: 14px;
+    background-color: white;
+    color: #1e293b;
+    outline: none;
+    margin-right: 10px;
+}
+
+select {
+    min-width: 260px;
+    cursor: pointer;
+}
+
+input[type="number"] {
+    width: 160px;
+}
+
+select:focus,
+input[type="number"]:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+input:disabled {
+    background-color: #e2e8f0;
+    cursor: not-allowed;
+}
+
+/* BOUTONS */
+
+button {
+    padding: 12px 25px;
+    background-color: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.2s;
+}
+
+button:hover {
+    background-color: #1d4ed8;
+    transform: translateY(-1px);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+/* FOOTER */
+
+footer {
+    margin-top: 60px;
+    padding: 20px;
+    text-align: center;
+    color: #64748b;
+    font-size: 13px;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 800px) {
+    main {
+        margin: 25px auto;
+        padding: 0 12px;
+    }
+
+    table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    select,
+    input[type="number"],
+    button {
+        width: 100%;
+        margin: 5px 0;
+    }
+
+    header {
+        padding: 20px;
+    }
+}
