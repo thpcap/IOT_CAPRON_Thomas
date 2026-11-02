@@ -51,7 +51,7 @@ unsigned long read_time=0;
 unsigned long sec_time=0;
 
 //Does the sesor measure
-bool measure = true;
+bool measure = false;
 //Life LED Blink Time
 int blink_time=250;
 //blink time stocké en attente 
@@ -154,6 +154,10 @@ void resetScreen(){
               String(now.day()) + "/" +
               String(now.month()) + "/" +
               String(now.year() % 100));
+  if(!measure){
+    lcd.setCursor(15,0);
+    lcd.print("*");
+  }
   lcd.setCursor(0,1);
   lcd.print(ip);
 }

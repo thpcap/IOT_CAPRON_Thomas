@@ -48,3 +48,4 @@ Code arduino: <code>TEMPHUMIX/temphumix/temphumix.ino</code>\
     Dossier: <code>/IHM/Back/app/console_mqtt_lecture</code>\
 *7.3.4 ecriture MQTT et envoi de commandes*
     Dossier: <code>/IHM/Back/app/console_mqtt_ecriture</code>\
+*7.3.6 MQTT multithreadé*
