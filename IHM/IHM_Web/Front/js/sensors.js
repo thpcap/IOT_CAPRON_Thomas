@@ -75,9 +75,16 @@ async function chargerCapteurs() {
                 <td class="capt_sn">${sensor.serialnumber}</td>
                 <td class="capt_v">${sensor.version ?? "Inconnue"}</td>
                 <td>${sensor.autoimported}</td>
-                <button type="button" onclick="afficherGraphique('${sensor.serialnumber}')">
-                    Afficher le graphique
-                </button>
+                <td>
+                    <button type="button" onclick="afficherGraphique('${sensor.serialnumber}')">
+                        Afficher le graphique
+                    </button>
+                </td>
+                <td>
+                    <button type="button" onclick="supprimerCapteur('${sensor.serialnumber}')">
+                        Supprimer
+                    </button>
+                </td>
             `;
 
             tbody.appendChild(tr);
@@ -90,5 +97,36 @@ async function chargerCapteurs() {
                 <td colspan="6">Impossible de charger les capteurs.</td>
             </tr>
         `;
+    }
+}
+
+async function supprimerCapteur(serialnumber) {
+
+    if (!confirm(`Voulez-vous vraiment supprimer le capteur ${serialnumber} ?\nToutes ses mesures seront également supprimées.`)) {
+        return;
+    }
+
+    try {
+        const response = await fetch(
+            `/api/sensors/${encodeURIComponent(serialnumber)}`,
+            {
+                method: "DELETE"
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.detail || "Erreur lors de la suppression");
+        }
+
+        alert("Capteur supprimé avec succès !");
+
+        // Actualiser la liste des capteurs
+        chargerCapteurs();
+
+    } catch (error) {
+        console.error("Erreur :", error);
+        alert(error.message);
     }
 }

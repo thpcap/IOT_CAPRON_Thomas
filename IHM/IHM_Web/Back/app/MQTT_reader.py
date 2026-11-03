@@ -114,30 +114,39 @@ class MQTTReader:
 
             for sensor in sensors:
                 if sensor.topic_t:
-                    new_topics[sensor.topic_t] = (
-                        sensor.serialnumber, "T"
-                    )
+                    new_topics[sensor.topic_t] = (sensor.serialnumber, "T")
 
                 if sensor.topic_h:
-                    new_topics[sensor.topic_h] = (
-                        sensor.serialnumber, "H"
-                    )
+                    new_topics[sensor.topic_h] = (sensor.serialnumber, "H")
 
                 if sensor.topic_version:
-                    new_topics[sensor.topic_version] = (
-                        sensor.serialnumber, "V"
-                    )
+                    new_topics[sensor.topic_version] = (sensor.serialnumber, "V")
 
+            # Récupérer les anciens topics
             with self.lock:
+                old_topics = set(self.topics.keys())
+                current_topics = set(new_topics.keys())
+
                 self.topics = new_topics
 
+            # Calculer les topics à ajouter et à supprimer
+            topics_to_add = current_topics - old_topics
+            topics_to_remove = old_topics - current_topics
+
             if self.connected:
-                for topic in new_topics:
+
+                # Se désabonner des anciens topics
+                for topic in topics_to_remove:
+                    self.client.unsubscribe(topic)
+                    logger.info("Désabonnement MQTT : %s", topic)
+
+                # S'abonner aux nouveaux topics
+                for topic in topics_to_add:
                     self.client.subscribe(topic, qos=1)
                     logger.info("Abonnement MQTT : %s", topic)
 
         except Exception:
-            logger.exception("Erreur lors du chargement des topics")
+            logger.exception("Erreur lors du rafraîchissement des topics")
 
         finally:
             db.close()

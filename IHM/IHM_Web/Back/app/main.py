@@ -319,7 +319,37 @@ def get_sensor_readings(
     
 
 
+@app.delete("/api/sensors/{serialnumb²er}")
+def delete_sensor(
+    serialnumber: str,
+    db: Session = Depends(get_db)
+):
+    # Rechercher le capteur
+    sensor = db.get(SensorTable, serialnumber)
 
+    if sensor is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Capteur introuvable"
+        )
+
+    try:
+        db.delete(sensor)
+        db.commit()
+        mqtt_reader.refresh_subscriptions()
+        return {
+            "status": "success",
+            "message": "Capteur supprimé",
+            "serialnumber": serialnumber
+        }
+
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=500,
+            detail=f"Erreur lors de la suppression : {str(e)}"
+        )
+        
 
 @app.get("/api/db-test")
 def test_database(db: Session = Depends(get_db)):
