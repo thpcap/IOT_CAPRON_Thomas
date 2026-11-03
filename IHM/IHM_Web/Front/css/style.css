@@ -208,3 +208,15 @@ footer {
         padding: 20px;
     }
 }
+.graphique-wrapper {
+    position: relative;
+    width: 100%;
+    height: 600px !important;
+    margin-top: 20px;
+}
+
+#graphiqueContainer {
+    width: 95%;
+    margin: 30px auto;
+    padding: 20px;
+}

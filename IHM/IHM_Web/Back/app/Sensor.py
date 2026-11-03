@@ -1,32 +1,39 @@
-class Sensor :
-    def __init__(self,
-                 serialnumber: str,
-                 TempTopic: str="",
-                 HumiTopic: str="",
-                 versTopic: str="",
-                 dateTopic: str=""
-                ):
-        if int(serialnumber)<0:
-            raise ValueError("numéro de serie invalide")
-        self.serialnumber = serialnumber
+from pydantic import BaseModel
 
+class Sensor:
+
+    def __init__(
+        self,
+        serialnumber: str,
+        id: int | None = None,
+        TempTopic: str = "",
+        HumiTopic: str = "",
+        versTopic: str = "",
+        dateTopic: str = "",
+        CommandTopic: str = "",
+        BlinkTopic: str = "",
+        BargraphTopic: str = ""
+    ):
+
+        if not serialnumber.isdigit():
+            raise ValueError("Numéro de série invalide")
+
+        self.serialnumber = serialnumber
+        self.id = id
         self.TempTopic = TempTopic or f"/iot/TEMPERATURE_{serialnumber}"
         self.HumiTopic = HumiTopic or f"/iot/HUMIDITY_{serialnumber}"
         self.versTopic = versTopic or f"/iot/VERSION_{serialnumber}"
         self.dateTopic = dateTopic or f"/iot/GET_DATE_{serialnumber}"
+
+        self.CommandTopic = CommandTopic or f"/iot/COMMAND_{serialnumber}"
+        self.BlinkTopic = BlinkTopic or f"/iot/BLINK_{serialnumber}"
+        self.BargraphTopic = BargraphTopic or f"/iot/BARGRAPH_{serialnumber}"
         
-    def handleMessage(self,topic:str,message:str):
-        if topic==self.TempTopic:
-            #handleTemp
-            return True
-        elif topic== self.HumiTopic:
-            #handleHumidity
-            return True
-        elif topic==self.versTopic:
-            self.Version=message
-            return True
-        elif topic==self.dateTopic:
-            #handleDate
-            return True
-        else:
-            return False
+class SensorCreate(BaseModel):
+    serialnumber: str
+    name: str | None = None
+
+class SendCommandRequest(BaseModel):
+    capteurs: list[str]
+    commande: str
+    value: str | None = None

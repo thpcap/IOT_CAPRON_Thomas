@@ -1,6 +1,8 @@
 import paho.mqtt.client as mqtt
 from paho.mqtt.client import CallbackAPIVersion
 import time
+from app.Sensor import Sensor, SensorCreate
+
 class ClientMQTT:
     def __init__(self, ip_address, port, client_id, username, password):
         self.ip_address = ip_address
@@ -103,55 +105,76 @@ class ClientMQTT:
             self.client.loop_forever()
         else:
             self.client.loop(timeout=timeout)
-    def send_command(self,capteurs,command,value=""):
-        for id_capt in capteurs:
+    def send_command(self, capteurs: list[Sensor], command: str, value=""):
+        #Envoie une commande MQTT à une liste d'objets Sensor.
+        for capteur in capteurs:
+
             match command.upper():
+
                 case '1':
-                    self.publish_mqtt("/iot/COMMAND_"+str(id_capt),"10")
-                    #1 - Mise à l'heure du capteur
-                    return "Mise à l'heure du capteur"
+                    # Mise à l'heure du capteur
+                    self.publish_mqtt(capteur.CommandTopic, "10")
+                    message = "Mise à l'heure du capteur"
+
                 case '2':
-                    self.publish_mqtt("/iot/COMMAND_"+str(id_capt),"20")
-                    #2 - Démarrage des mesures
-                    return "Démarrage des mesures"
+                    # Démarrage des mesures
+                    self.publish_mqtt(capteur.CommandTopic, "20")
+                    message = "Démarrage des mesures"
+
                 case '3':
-                    self.publish_mqtt("/iot/COMMAND_"+str(id_capt),"30")
-                    #3 - Arrêt des mesures
-                    return "Arrêt des mesures"
+                    # Arrêt des mesures
+                    self.publish_mqtt(capteur.CommandTopic, "30")
+                    message = "Arrêt des mesures"
+
                 case '4':
-                    self.publish_mqtt("/iot/COMMAND_"+str(id_capt),"40")
-                    #4 - Clignotement lent
-                    return "Clignotement lent"
+                    # Clignotement lent
+                    self.publish_mqtt(capteur.CommandTopic, "40")
+                    message = "Clignotement lent"
+
                 case '5':
-                    self.publish_mqtt("/iot/COMMAND_"+str(id_capt),"50")
-                    #5 - Clignotement rapide
-                    return "Clignotement rapide"
+                    # Clignotement rapide
+                    self.publish_mqtt(capteur.CommandTopic, "50")
+                    message = "Clignotement rapide"
+
                 case '6':
-                    #6 - Clignotement personnalisé
+                    # Clignotement personnalisé
                     delay = int(value)
-                    if delay > 0:
-                        self.publish_mqtt("/iot/BLINK_" + str(id_capt), delay)
-                        time.sleep(1)
-                        self.publish_mqtt("/iot/COMMAND_" + str(id_capt), "60")
-                        return "Clignotement personnalisé"
-                    else:
-                        #Le délai doit être supérieur à 0.
+
+                    if delay <= 0:
                         raise ValueError("Le délai doit être supérieur à 0.")
+
+                    self.publish_mqtt(capteur.BlinkTopic, str(delay))
+                    time.sleep(1)
+                    self.publish_mqtt(capteur.CommandTopic, "60")
+
+                    message = "Clignotement personnalisé"
+
                 case '7':
-                    #7 - Ecriture du bargraphe
+                    # Écriture du bargraphe
+                    number_value = int(value)
 
-                    while True:
-                        number = input("Insérez un nombre entre 0 et 1023 ou Q pour sortir : ")
-                        number_value = int(number)
+                    if not 0 <= number_value <= 1023:
+                        raise ValueError("Valeur incorrecte : entre 0 et 1023.")
 
-                        if 0 <= number_value <= 1023:
-                            self.publish_mqtt(
-                                "/iot/BARGRAPH_" + str(id_capt),
-                                str(number_value)
-                            )
-                            break
-                        else:
-                            #Valeur incorrecte : entre 0 et 1023.
-                            raise ValueError("Valeur incorrecte : entre 0 et 1023.")
+                    self.publish_mqtt(capteur.BargraphTopic, str(number_value))
+                    message = "Écriture du bargraphe"
 
+                case '8':
+                    # Afficher l'identifiant du capteur sur son bargraphe
+
+                    if capteur.id is None:
+                        raise ValueError(
+                            f"Le capteur {capteur.serialnumber} ne possède pas d'identifiant."
+                        )
+
+                    self.publish_mqtt(
+                        capteur.BargraphTopic,
+                        str(capteur.id)
+                    )
+
+                    message = f"Affichage de l'identifiant {capteur.id}"
                 
+                case _:
+                    raise ValueError("Commande inconnue.")
+
+        return message

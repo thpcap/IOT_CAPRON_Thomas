@@ -1,0 +1,62 @@
+services:
+  mariadb:
+    image: mariadb:11.4
+    container_name: temphumix-db
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD:?Définir MARIADB_ROOT_PASSWORD dans .env}
+      MARIADB_DATABASE: ${MARIADB_DATABASE:-temphumix}
+      MARIADB_USER: ${MARIADB_USER:-temphumix}
+      MARIADB_PASSWORD: ${MARIADB_PASSWORD:?Définir MARIADB_PASSWORD dans .env}
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+    networks:
+      - temphumix
+
+  backend:
+    build:
+      context: ./Back
+      dockerfile: Dockerfile
+    container_name: temphumix-back
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      DB_HOST: mariadb
+      DB_PORT: "3306"
+      DB_NAME: ${MARIADB_DATABASE:-temphumix}
+      DB_USER: ${MARIADB_USER:-temphumix}
+      DB_PASSWORD: ${MARIADB_PASSWORD:?Définir MARIADB_PASSWORD dans .env}
+      # Exemple d'URL SQLAlchemy avec PyMySQL :
+      DATABASE_URL: mysql+pymysql://${MARIADB_USER:-temphumix}:${MARIADB_PASSWORD}@mariadb:3306/${MARIADB_DATABASE:-temphumix}
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    networks:
+      - temphumix
+
+  frontend:
+    build:
+      context: ./Front
+      dockerfile: Dockerfile
+    container_name: temphumix-front
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+    networks:
+      - temphumix
+
+volumes:
+  mariadb_data:
+
+networks:
+  temphumix:
+    driver: bridge
