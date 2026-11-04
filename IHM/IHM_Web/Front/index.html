@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="">
+  <head>
+    <meta charset="utf-8">
+    <title>IOT_Capteurs</title>
+    <link rel="stylesheet" href="css/style.css">
+  </head>
+  <body>
+    <header><h1>TempHumiX</h1></header>
+    <main>
+      <div id="options" hidden>
+        <div id="detectSensors"><input type="checkbox" name="detectSensors" id="detectSensorsCb">Detecter automatiquement les Capteurs</div>
+      </div>
+      <form id="commandForm">
+        <h2>Capteurs</h2>
+        <table>
+          <thead>
+            <tr>
+              <th></th>
+              <th>Id</th>
+              <td>Nom</td>
+              <th>Numéro de serie</th>
+              <th>Version</th>
+              <th hidden>Est Autoimporté</th>
+              <th colspan="2">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="capteurList">            
+          </tbody>
+        </table>
+        <div>
+          <h2>Envoyer une commande</h2>
+          <div>
+            <select name="commande" id="commande" onchange="activerNombre()">
+                <option value="" selected></option>
+                <option value="1">Mise à l'heure du capteur</option>
+                <option value="2">Démarrage des mesures</option>
+                <option value="3">Arrêt des mesures</option>
+                <option value="4">Clignotement lent</option>
+                <option value="5">Clignotement rapide</option>
+                <option value="6" data-min="2">Clignotement personnalisé</option>
+                <option value="7" data-min="0" data-max="1023">Écriture du bargraphe</option>
+                <option value="8">Afficher l'identifiant sur les bargraph</option>
+            </select>
+            <input type="number" name="value" id="value" disabled></input>
+            <button type="submit">Envoyer</button>
+          </div>
+        </div>
+        <div id="graphiqueContainer" style="display: none;">
+
+            <h2>
+                Historique du capteur
+                <span id="graphiqueSN"></span>
+                <div class="graphique-filtres">
+                  <div>
+                      <label for="heureDebut">Date et heure de début</label>
+                      <input type="datetime-local" id="heureDebut">
+                  </div>
+
+                  <div>
+                      <label for="heureFin">Date et heure de fin</label>
+                      <input type="datetime-local" id="heureFin">
+                  </div>
+
+                  <button type="button" onclick="appliquerPeriodeGraphique()">
+                      Appliquer
+                  </button>
+
+                  <button type="button" onclick="reinitialiserPeriodeGraphique()">
+                      Dernière heure
+                  </button>
+              </div>
+            </h2>
+
+            <div class="graphique-wrapper">
+                <canvas id="sensorChart"></canvas>
+            </div>
+
+        </div>
+
+        
+        
+      </form>
+      <section class="sensor-form-container">
+          <h2>Ajouter un capteur</h2>
+
+          <form id="sensorForm">
+
+              <div class="form-group">
+                  <label for="serialnumber">Numéro de série</label>
+                  <input
+                      type="text"
+                      id="serialnumber"
+                      name="serialnumber"
+                      placeholder="Ex : 42900"
+                      required
+                  >
+              </div>
+
+              <div class="form-group">
+                  <label for="name">Nom du capteur</label>
+                  <input
+                      type="text"
+                      id="name"
+                      name="name"
+                      placeholder="Ex : Capteur salle serveur"
+                  >
+              </div>
+
+              <button type="button" class="advanced-toggle" onclick="toggleAdvanced()">
+                  <span>Configuration avancée</span>
+                  <span id="advancedArrow">⌄</span>
+              </button>
+
+              <div id="advancedConfig">
+                  <div class="advanced-inner">
+
+                      <label>Topic température</label>
+                      <input type="text" id="topicT" placeholder="Topic par défaut si vide">
+
+                      <label>Topic humidité</label>
+                      <input type="text" id="topicH" placeholder="Topic par défaut si vide">
+
+                      <label>Topic date</label>
+                      <input type="text" id="topicDate" placeholder="Topic par défaut si vide">
+
+                      <label>Topic version</label>
+                      <input type="text" id="topicVersion" placeholder="Topic par défaut si vide">
+
+                      <label>Topic commande</label>
+                      <input type="text" id="topicCommand" placeholder="Topic par défaut si vide">
+
+                      <label>Topic blink</label>
+                      <input type="text" id="topicBlink" placeholder="Topic par défaut si vide">
+
+                      <label>Topic bargraph</label>
+                      <input type="text" id="topicBargraph" placeholder="Topic par défaut si vide">
+
+                  </div>
+              </div>
+
+
+              <button type="submit">Ajouter le capteur</button>
+
+              <p id="sensorMessage"></p>
+
+          </form>
+      </section>
+    </main>
+    <footer>
+      Thomas CAPRON
+      
+    </footer>
+    <!-- Chart.js -->
+      <script src="/js/js_libs/chart.umd.min.js"></script>
+
+      <!-- Luxon -->
+      <script src="/js/js_libs/luxon.min.js"></script>
+
+      <!-- Adaptateur de dates -->
+      <script src="/js/js_libs/chartjs-adapter-luxon.umd.min.js"></script>
+
+      <!-- Ton fichier graphique -->
+      <script src="js/graph.js"></script>
+      <script>
+        const API_URL = "http://localhost:8000";
+      </script>
+      <script src="js/inputs.js"></script>
+      <script src="js/sensors.js"></script>
+      <script src="js/command.js"></script>
+  </body>
+</html>

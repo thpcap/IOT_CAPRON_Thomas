@@ -17,9 +17,7 @@
 #define SECRET_SSID "IoT IMT Nord Europe"
 #define SECRET_PASS "72Hin@R*"
 
-#define Version (String)"1.1"
-
-#define ID_Sensor (String)"42900"
+#define Version (String)"1.2"
 
 const char* IpNTP = "192.168.1.254";
 // Broker MQTT
@@ -29,6 +27,8 @@ const int port = 1883;
 const char mqttUser[] = "mos_user";
 const char mqttPassword[] = "mos_user";
 const int UTC_H = 1;
+
+const char SensorSerialNumber[] = "42900";
 
 RTC_Millis rtc;
 DHT dht(DHT22_DATA, DHT22);
@@ -43,6 +43,7 @@ int status = WL_IDLE_STATUS;
 IPAddress ip ;
 
 
+
 float old_t = 0;
 float old_h = 0;
 
@@ -51,7 +52,7 @@ unsigned long read_time=0;
 unsigned long sec_time=0;
 
 //Does the sesor measure
-bool measure = true;
+bool measure = false;
 //Life LED Blink Time
 int blink_time=250;
 //blink time stocké en attente 
@@ -130,7 +131,7 @@ void connectMQTT(){
   lcd.setCursor(0,1);
   lcd.print(ip);
   Serial.print("Connexion MQTT...");
-  mqttClient.setId("ido_client_"+ID_Sensor);
+  mqttClient.setId("ido_client_"+String(SensorSerialNumber));
   mqttClient.setUsernamePassword(mqttUser, mqttPassword);
   if (!mqttClient.connect(broker, port)) {
     Serial.print("Echec : ");
@@ -138,9 +139,9 @@ void connectMQTT(){
     while (1);
   }
   Serial.println("MQTT OK");
-  mqttClient.subscribe("/iot/COMMAND_42900");
-  mqttClient.subscribe("/iot/BARGRAPH_42900");
-  mqttClient.subscribe("/iot/BLINK_42900");
+  mqttClient.subscribe("/iot/COMMAND_"+String(SensorSerialNumber));
+  mqttClient.subscribe("/iot/BARGRAPH_"+String(SensorSerialNumber));
+  mqttClient.subscribe("/iot/BLINK_"+String(SensorSerialNumber));
   delay(1000);
 
 }
@@ -154,6 +155,10 @@ void resetScreen(){
               String(now.day()) + "/" +
               String(now.month()) + "/" +
               String(now.year() % 100));
+  if(!measure){
+    lcd.setCursor(15,0);
+    lcd.print("*");
+  }
   lcd.setCursor(0,1);
   lcd.print(ip);
 }
@@ -190,7 +195,7 @@ void ReadMQTT(int messageSize){
       res=res+(char)mqttClient.read();
     }
     Serial.print(res);
-    if(topic=="/iot/COMMAND_42900"){
+    if(topic=="/iot/COMMAND_"+String(SensorSerialNumber)){
       switch(res.toInt()){
         case 10:
           updateNTP();
@@ -222,9 +227,9 @@ void ReadMQTT(int messageSize){
           Serial.println("Commande inconnue : " + res);
           break;
       }
-    }else if(topic=="/iot/BARGRAPH_42900"){
+    }else if(topic=="/iot/BARGRAPH_"+String(SensorSerialNumber)){
       bargraph2(res.toInt());
-    }else if(topic=="/iot/BLINK_42900"){
+    }else if(topic=="/iot/BLINK_"+String(SensorSerialNumber)){
       if(res.toInt()!=0){
         blink_time_tmp=res.toInt()/2;
       }
@@ -284,11 +289,11 @@ void loop() {
       }*/
 
       if (mqttClient.connected()) {
-        mqttClient.beginMessage("/iot/TEMPERATURE_42900");
+        mqttClient.beginMessage("/iot/TEMPERATURE_"+String(SensorSerialNumber));
         mqttClient.print(t, 1);
         mqttClient.endMessage();
 
-        mqttClient.beginMessage("/iot/HUMIDITY_42900");
+        mqttClient.beginMessage("/iot/HUMIDITY_"+String(SensorSerialNumber));
         mqttClient.print(h, 1);
         mqttClient.endMessage();
 
@@ -299,11 +304,11 @@ void loop() {
                 String(now.hour()) + ":" +
                 String(now.minute()) + ":" +
                 String(now.second());
-        mqttClient.beginMessage("/iot/GET_DATE_42900");
+        mqttClient.beginMessage("/iot/GET_DATE_"+String(SensorSerialNumber));
         mqttClient.print(date);
         mqttClient.endMessage();
 
-        mqttClient.beginMessage("/iot/VERSION_42900");
+        mqttClient.beginMessage("/iot/VERSION_"+String(SensorSerialNumber));
         mqttClient.print(Version);
         mqttClient.endMessage();
       }
