@@ -160,7 +160,3 @@ La connexion MQTT doit être établie avant de poursuivre.
 Depuis un navigateur, accéder à l'adresse suivante :
 
 [http://localhost:8080](http://localhost:8080)
-
-La documentation interactive de l'API FastAPI est également disponible :
-
-[http://localhost:8080/docs](http://localhost:8080/docs)
