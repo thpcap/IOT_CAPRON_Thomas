@@ -8,7 +8,7 @@
   <body>
     <header><h1>TempHumiX</h1></header>
     <main>
-      <div id="options">
+      <div id="options" hidden>
         <div id="detectSensors"><input type="checkbox" name="detectSensors" id="detectSensorsCb">Detecter automatiquement les Capteurs</div>
       </div>
       <form id="commandForm">
@@ -21,22 +21,11 @@
               <td>Nom</td>
               <th>Numéro de serie</th>
               <th>Version</th>
-              <th>Est Autoimporté</th>
+              <th hidden>Est Autoimporté</th>
               <th colspan="2">Actions</th>
             </tr>
           </thead>
-          <tbody id="capteurList">
-            <tr class="capt_42900">
-              <td><input type="checkbox" name="Capteurs" id="" value="42900"></td>
-              <td class="capt_id">1</td>
-              <td class="capt_sn">42900</td>
-              <td class="capt_v">V1.1</td>
-              <td>False</td>
-              <td>
-                <a onclick="">Voir le graphique</a>
-              </td>
-            </tr>
-            
+          <tbody id="capteurList">            
           </tbody>
         </table>
         <div>

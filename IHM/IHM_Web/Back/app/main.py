@@ -300,7 +300,7 @@ def get_sensor_readings(
             heure_debut = heure_fin - timedelta(hours=1)
 
         # Vérifier la cohérence des dates
-        if heure_debut >= heure_fin:
+        if heure_fin and heure_debut >= heure_fin:
             raise HTTPException(
                 status_code=400,
                 detail="L'heure de début doit être antérieure à l'heure de fin"

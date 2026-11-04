@@ -99,7 +99,7 @@ async function chargerCapteurs() {
                 <td class="capt_name">${sensor.name}</td>
                 <td class="capt_sn">${sensor.serialnumber}</td>
                 <td class="capt_v">${sensor.version ?? "Inconnue"}</td>
-                <td>${sensor.autoimported}</td>
+                <td hidden>${sensor.autoimported}</td>
                 <td>
                     <button type="button" onclick="afficherGraphique('${sensor.serialnumber}')">
                         Afficher le graphique
