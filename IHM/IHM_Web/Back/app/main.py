@@ -319,7 +319,7 @@ def get_sensor_readings(
     
 
 
-@app.delete("/api/sensors/{serialnumb²er}")
+@app.delete("/api/sensors/{serialnumber}")
 def delete_sensor(
     serialnumber: str,
     db: Session = Depends(get_db)
