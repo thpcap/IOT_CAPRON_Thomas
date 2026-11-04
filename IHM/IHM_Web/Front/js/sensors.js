@@ -1,4 +1,13 @@
-document.addEventListener("DOMContentLoaded",function(){
+
+function toggleAdvanced() {
+    const menu = document.getElementById("advancedConfig");
+    const arrow = document.getElementById("advancedArrow");
+
+    menu.classList.toggle("open");
+    arrow.classList.toggle("rotated");
+}
+
+document.addEventListener("DOMContentLoaded", function () {
 
     const sensorForm = document.getElementById("sensorForm");
 
@@ -8,6 +17,15 @@ document.addEventListener("DOMContentLoaded",function(){
         const data = {
             serialnumber: document.getElementById("serialnumber").value.trim(),
             name: document.getElementById("name").value.trim() || null,
+
+            // Topics personnalisés
+            TempTopic: document.getElementById("topicT").value.trim() || "",
+            HumiTopic: document.getElementById("topicH").value.trim() || "",
+            dateTopic: document.getElementById("topicDate").value.trim() || "",
+            versTopic: document.getElementById("topicVersion").value.trim() || "",
+            CommandTopic: document.getElementById("topicCommand").value.trim() || "",
+            BlinkTopic: document.getElementById("topicBlink").value.trim() || "",
+            BargraphTopic: document.getElementById("topicBargraph").value.trim() || ""
         };
 
         try {
@@ -29,6 +47,11 @@ document.addEventListener("DOMContentLoaded",function(){
             alert("Capteur ajouté avec succès !");
 
             sensorForm.reset();
+
+            // Refermer la configuration avancée
+            document.getElementById("advancedConfig").classList.remove("open");
+            document.getElementById("advancedArrow").classList.remove("rotated");
+
             chargerCapteurs();
 
         } catch (error) {
@@ -36,9 +59,11 @@ document.addEventListener("DOMContentLoaded",function(){
             alert("Impossible de contacter le serveur : " + error.message);
         }
     });
+
     chargerCapteurs();
 
 });
+
 
 
 async function chargerCapteurs() {

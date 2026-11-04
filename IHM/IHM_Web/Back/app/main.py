@@ -3,6 +3,8 @@ from fastapi import FastAPI, Depends, HTTPException,Query
 from sqlalchemy import text,select,func
 from sqlalchemy.orm import Session
 from fastapi.middleware.cors import CORSMiddleware
+from datetime import datetime, timedelta
+
 
 from app.Sensor import Sensor, SensorCreate, SendCommandRequest
 from app.Database import get_db, Base, engine
@@ -10,7 +12,6 @@ from app import DB_Tables
 from app.DB_Tables import SensorTable, Reading
 from app.ClientMQTT import ClientMQTT
 from app.MQTT_reader import MQTTReader
-from datetime import datetime, timedelta
 
 
 app = FastAPI()
@@ -85,6 +86,7 @@ def add_sensor(sensor_data: SensorCreate, db: Session = Depends(get_db)):
                 detail="Ce capteur existe déjà."
             )
 
+
         dernier_id = db.scalar(
             select(func.max(SensorTable.id))
         )
@@ -95,14 +97,14 @@ def add_sensor(sensor_data: SensorCreate, db: Session = Depends(get_db)):
             serialnumber=sensor.serialnumber,
             name=sensor_data.name or f"Capteur {sensor.serialnumber}",
             id=nouvel_id,
-            topic_t=sensor.TempTopic,
-            topic_h=sensor.HumiTopic,
-            topic_date=sensor.dateTopic,
-            topic_version=sensor.versTopic,
+            topic_t=sensor_data.TempTopic or sensor.TempTopic,
+            topic_h=sensor_data.HumiTopic or sensor.HumiTopic,
+            topic_date=sensor_data.dateTopic or sensor.dateTopic,
+            topic_version=sensor_data.versTopic or sensor.versTopic,
 
-            topic_command=f"/iot/COMMAND_{sensor.serialnumber}",
-            topic_blink=f"/iot/BLINK_{sensor.serialnumber}",
-            topic_bargraph=f"/iot/BARGRAPH_{sensor.serialnumber}",
+            topic_command=sensor_data.CommandTopic or sensor.CommandTopic,
+            topic_blink=sensor_data.BlinkTopic or sensor.BlinkTopic,
+            topic_bargraph=sensor_data.BargraphTopic or sensor.BargraphTopic,
 
             version=None,
             autoimported=False
@@ -273,50 +275,94 @@ def send_command_api(
 @app.get("/api/sensors/{serialnumber}/readings")
 def get_sensor_readings(
     serialnumber: str,
+    heure_debut: datetime | None = Query(default=None),
+    heure_fin: datetime | None = Query(default=None),
     limit: int = Query(default=1000, ge=1, le=10000),
     db: Session = Depends(get_db)
 ):
-    sensor = db.get(SensorTable, serialnumber)
+    try:
+        # Vérifier que le capteur existe
+        sensor = db.get(SensorTable, serialnumber)
 
-    if sensor is None:
-        raise HTTPException(
-            status_code=404,
-            detail="Capteur introuvable"
-        )
+        if sensor is None:
+            raise HTTPException(
+                status_code=404,
+                detail="Capteur introuvable"
+            )
 
-    date_limite = datetime.now() - timedelta(minutes=10)
+        # Définir les dates par défaut
+        maintenant = datetime.now()
 
-    readings = db.execute(
-        select(Reading)
-        .where(
-            Reading.SN == serialnumber,
-            Reading.date >= date_limite
-        )
-        .order_by(Reading.date.asc(), Reading.read_id.asc())
-    ).scalars().all()
+        if heure_fin is None:
+            heure_fin = maintenant
 
-    temperature = []
-    humidity = []
+        if heure_debut is None:
+            heure_debut = heure_fin - timedelta(hours=1)
 
-    for reading in reversed(readings):
+        # Vérifier la cohérence des dates
+        if heure_debut >= heure_fin:
+            raise HTTPException(
+                status_code=400,
+                detail="L'heure de début doit être antérieure à l'heure de fin"
+            )
 
-        mesure = {
-            "time": reading.date.strftime("%Y-%m-%d %H:%M:%S"),
-            "reading": str(reading.val)
+        print(f"Capteur : {serialnumber}")
+        print(f"Début : {heure_debut}")
+        print(f"Fin : {heure_fin}")
+
+        # Récupérer les mesures
+        readings = db.execute(
+            select(Reading)
+            .where(
+                Reading.SN == serialnumber,
+                Reading.date >= heure_debut,
+                Reading.date <= heure_fin
+            )
+            .order_by(Reading.date.asc(), Reading.read_id.asc())
+            .limit(limit)
+        ).scalars().all()
+
+        print(f"Nombre de mesures trouvées : {len(readings)}")
+
+        temperature = []
+        humidity = []
+
+        for reading in readings:
+
+            mesure = {
+                "time": reading.date.strftime("%Y-%m-%d %H:%M:%S"),
+                "reading": str(reading.val)
+            }
+
+            if reading.type == "T":
+                temperature.append(mesure)
+
+            elif reading.type == "H":
+                humidity.append(mesure)
+
+        # Construire la réponse
+        resultat = {
+            "serialnumber": serialnumber,
+            "heure_debut": heure_debut.strftime("%Y-%m-%d %H:%M:%S"),
+            "heure_fin": heure_fin.strftime("%Y-%m-%d %H:%M:%S"),
+            "temperature": temperature,
+            "humidity": humidity
         }
 
-        if reading.type == "T":
-            temperature.append(mesure)
+        print("Réponse API :", resultat)
 
-        elif reading.type == "H":
-            humidity.append(mesure)
+        return resultat
 
-    return {
-        "serialnumber": serialnumber,
-        "temperature": temperature,
-        "humidity": humidity
-    }
-    
+    except HTTPException:
+        raise
+
+    except Exception as e:
+        print(f"Erreur get_sensor_readings : {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Erreur lors de la récupération des mesures : {str(e)}"
+        )
+
 
 
 @app.delete("/api/sensors/{serialnumber}")

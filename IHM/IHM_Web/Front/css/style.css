@@ -220,3 +220,74 @@ footer {
     margin: 30px auto;
     padding: 20px;
 }
+
+.advanced-toggle {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px;
+    margin: 15px 0;
+    border: none;
+    border-radius: 8px;
+    background: #2563eb;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+#advancedConfig {
+    display: grid;
+    grid-template-rows: 0fr;
+    opacity: 0;
+    transition: grid-template-rows 0.4s ease, opacity 0.3s ease;
+}
+
+#advancedConfig.open {
+    grid-template-rows: 1fr;
+    opacity: 1;
+}
+
+.advanced-inner {
+    min-height: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 0 5px;
+}
+
+#advancedArrow {
+    display: inline-block;
+    transition: transform 0.3s ease;
+}
+
+#advancedArrow.rotated {
+    transform: rotate(180deg);
+}
+
+.graphique-filtres {
+    display: flex;
+    align-items: end;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.graphique-filtres div {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.graphique-filtres input {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+
+.graphique-filtres button {
+    padding: 9px 15px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}

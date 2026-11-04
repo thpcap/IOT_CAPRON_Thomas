@@ -39,20 +39,6 @@
             
           </tbody>
         </table>
-        <div id="graphiqueContainer" style="display: none;">
-
-            <h2>
-                Historique du capteur
-                <span id="graphiqueSN"></span>
-            </h2>
-
-            <div class="graphique-wrapper">
-                <canvas id="sensorChart"></canvas>
-            </div>
-
-        </div>
-
-        
         <div>
           <h2>Envoyer une commande</h2>
           <div>
@@ -71,6 +57,40 @@
             <button type="submit">Envoyer</button>
           </div>
         </div>
+        <div id="graphiqueContainer" style="display: none;">
+
+            <h2>
+                Historique du capteur
+                <span id="graphiqueSN"></span>
+                <div class="graphique-filtres">
+                  <div>
+                      <label for="heureDebut">Date et heure de début</label>
+                      <input type="datetime-local" id="heureDebut">
+                  </div>
+
+                  <div>
+                      <label for="heureFin">Date et heure de fin</label>
+                      <input type="datetime-local" id="heureFin">
+                  </div>
+
+                  <button type="button" onclick="appliquerPeriodeGraphique()">
+                      Appliquer
+                  </button>
+
+                  <button type="button" onclick="reinitialiserPeriodeGraphique()">
+                      Dernière heure
+                  </button>
+              </div>
+            </h2>
+
+            <div class="graphique-wrapper">
+                <canvas id="sensorChart"></canvas>
+            </div>
+
+        </div>
+
+        
+        
       </form>
       <section class="sensor-form-container">
           <h2>Ajouter un capteur</h2>
@@ -97,6 +117,39 @@
                       placeholder="Ex : Capteur salle serveur"
                   >
               </div>
+
+              <button type="button" class="advanced-toggle" onclick="toggleAdvanced()">
+                  <span>Configuration avancée</span>
+                  <span id="advancedArrow">⌄</span>
+              </button>
+
+              <div id="advancedConfig">
+                  <div class="advanced-inner">
+
+                      <label>Topic température</label>
+                      <input type="text" id="topicT" placeholder="Topic par défaut si vide">
+
+                      <label>Topic humidité</label>
+                      <input type="text" id="topicH" placeholder="Topic par défaut si vide">
+
+                      <label>Topic date</label>
+                      <input type="text" id="topicDate" placeholder="Topic par défaut si vide">
+
+                      <label>Topic version</label>
+                      <input type="text" id="topicVersion" placeholder="Topic par défaut si vide">
+
+                      <label>Topic commande</label>
+                      <input type="text" id="topicCommand" placeholder="Topic par défaut si vide">
+
+                      <label>Topic blink</label>
+                      <input type="text" id="topicBlink" placeholder="Topic par défaut si vide">
+
+                      <label>Topic bargraph</label>
+                      <input type="text" id="topicBargraph" placeholder="Topic par défaut si vide">
+
+                  </div>
+              </div>
+
 
               <button type="submit">Ajouter le capteur</button>
 

@@ -32,6 +32,13 @@ class Sensor:
 class SensorCreate(BaseModel):
     serialnumber: str
     name: str | None = None
+    TempTopic: str | None = "",
+    HumiTopic: str | None = "",
+    versTopic: str | None = "",
+    dateTopic: str | None = "",
+    CommandTopic: str | None = "",
+    BlinkTopic: str | None = "",
+    BargraphTopic: str | None = ""
 
 class SendCommandRequest(BaseModel):
     capteurs: list[str]
